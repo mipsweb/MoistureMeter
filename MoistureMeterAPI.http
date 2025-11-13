@@ -1,0 +1,6 @@
+@MoistureMeterAPI_HostAddress = http://localhost:5111
+
+GET {{MoistureMeterAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
