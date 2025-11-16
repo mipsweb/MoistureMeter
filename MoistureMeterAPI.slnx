@@ -1,3 +1,5 @@
 <Solution>
-  <Project Path="MoistureMeterAPI.csproj" />
+  <Project Path="MoistureMeterAPI.Core/MoistureMeterAPI.Core.csproj" Id="d3ddf290-592f-48fd-811f-89341ee00b4d" />
+  <Project Path="MoistureMeterAPI.Test/MoistureMeterAPI.Test.csproj" Id="6ade53d7-0468-4a9e-a5f0-9a4950fee12c" />
+  <Project Path="MoistureMeterAPI/MoistureMeterAPI.csproj" />
 </Solution>

@@ -1,4 +1,4 @@
-﻿namespace MoistureMeterAPI.Options
+﻿namespace MoistureMeterAPI.Core.Options
 {
     public class MqttOptions
     {

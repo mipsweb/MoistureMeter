@@ -1,7 +1,10 @@
 ﻿using Microsoft.Extensions.Options;
-using MoistureMeterAPI.Options;
+using MoistureMeterAPI.Core.Models;
+using MoistureMeterAPI.Core.Options;
+using MoistureMeterAPI.Core.Services.Interfaces;
 using MQTTnet;
 using MQTTnet.Formatter;
+using Newtonsoft.Json;
 using System.Text;
 
 namespace MoistureMeterAPI.BackgroundService
@@ -14,10 +17,12 @@ namespace MoistureMeterAPI.BackgroundService
         MqttClientOptions _mqttClientOptions;
         MqttClientFactory _mqttFactory;
         MqttClientSubscribeOptions _mqttClientSubscribeOptions;
+        IMoistureMeterService _moistureMeterService;
 
-        public MqttBrokerService(ILogger<MqttBrokerService> logger, IOptions<MqttOptions> options)
+        public MqttBrokerService(ILogger<MqttBrokerService> logger, IOptions<MqttOptions> options, IMoistureMeterService moistureMeterService)
         {
             _logger = logger;
+            _moistureMeterService = moistureMeterService;
 
             _mqttFactory = new MqttClientFactory();
 
@@ -33,7 +38,30 @@ namespace MoistureMeterAPI.BackgroundService
             {
                 var message = Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
 
-                _logger.LogInformation(message);
+                MoistureMeterPayload? moistureMeterPayload = JsonConvert.DeserializeObject<MoistureMeterPayload>(message);
+                if (moistureMeterPayload != null)
+                {
+                    try
+                    {
+                        _logger.LogInformation($"Received moisture meter reading: {moistureMeterPayload.Value.Measure}");
+                
+                        var timestamp = DateTimeOffset.FromUnixTimeSeconds(moistureMeterPayload.Value.TS).UtcDateTime;
+
+                        var moistureMeterReading = new MoistureMeterReading
+                        {
+                            Timestamp = timestamp,
+                            Measure = moistureMeterPayload.Value.Measure
+                        };
+
+
+                        await _moistureMeterService.Insert(moistureMeterReading);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "Error logging moisture meter reading");
+                    }
+                }
+
 
                 await Task.CompletedTask;
             };
@@ -63,5 +91,11 @@ namespace MoistureMeterAPI.BackgroundService
                 await _mqttClient.DisconnectAsync();
             }
         }
+    }
+
+    public struct MoistureMeterPayload
+    {
+        public int TS { get; set; }
+        public float Measure { get; set; }
     }
 }
