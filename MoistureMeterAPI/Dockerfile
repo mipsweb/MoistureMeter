@@ -12,10 +12,11 @@ EXPOSE 8081
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["MoistureMeterAPI.csproj", "."]
-RUN dotnet restore "./MoistureMeterAPI.csproj"
+COPY ["MoistureMeterAPI/MoistureMeterAPI.csproj", "MoistureMeterAPI/"]
+COPY ["MoistureMeterAPI.Core/MoistureMeterAPI.Core.csproj", "MoistureMeterAPI.Core/"]
+RUN dotnet restore "./MoistureMeterAPI/MoistureMeterAPI.csproj"
 COPY . .
-WORKDIR "/src/."
+WORKDIR "/src/MoistureMeterAPI"
 RUN dotnet build "./MoistureMeterAPI.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 # This stage is used to publish the service project to be copied to the final stage
