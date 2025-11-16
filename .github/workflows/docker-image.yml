@@ -15,4 +15,11 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Build the Docker image
-      run: docker build . --file ./MoistureMeterAPI/Dockerfile --tag my-image-name:$(date +%s)
+      run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
+      with:
+          context: ./MoistureMeterAPI
+          file: ./MoistureMeterAPI/Dockerfile
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: |
+            my-image-name:$(date +%s)
