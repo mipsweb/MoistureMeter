@@ -1,7 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using MoistureMeterAPI.Core.Models;
-using MoistureMeterAPI.Core.Options;
 using MoistureMeterAPI.Core.Repository.Interfaces;
 using MongoDB.Driver;
 
@@ -16,18 +14,13 @@ namespace MoistureMeterAPI.Core.Repository
     public class MoistureMeterRepository : IMoistureMeterRepository
     {
         ILogger<MoistureMeterRepository> _logger;
-        MongoClient _mongoClient;
-        IMongoDatabase _mongoDatabase;
         IMongoCollection<MoistureMeterReading> _moistureMeterCollection;
 
-        public MoistureMeterRepository(ILogger<MoistureMeterRepository> logger, IOptions<MongoDBOptions> options)
+        public MoistureMeterRepository(ILogger<MoistureMeterRepository> logger, IDBContext dbContext)
         {
             _logger = logger;
 
-            _mongoClient = new MongoClient(options.Value.GetConnectionString());
-            _mongoDatabase = _mongoClient.GetDatabase(options.Value.DatabaseName);
-
-            _moistureMeterCollection = _mongoDatabase.GetCollection<MoistureMeterReading>("reading", new MongoCollectionSettings
+            _moistureMeterCollection = dbContext.MongoDatabase.GetCollection<MoistureMeterReading>("reading", new MongoCollectionSettings
             {
                 AssignIdOnInsert = true                
             });
@@ -38,13 +31,15 @@ namespace MoistureMeterAPI.Core.Repository
         /// </summary>
         /// <param name="reading">The moisture meter reading to insert. Cannot be null.</param>
         /// <returns>A task that represents the asynchronous insert operation.</returns>
-        public async Task Insert(MoistureMeterReading reading)
+        public async Task<bool> Insert(MoistureMeterReading reading)
         {
             _logger.LogInformation("Inserting new moisture meter reading");
 
             try
             {
                 await _moistureMeterCollection.InsertOneAsync(reading);
+
+                return true;
             }
             catch (Exception ex)
             {

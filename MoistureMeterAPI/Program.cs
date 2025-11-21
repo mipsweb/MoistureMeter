@@ -22,6 +22,7 @@ builder.Services.AddSingleton(config);
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 builder.Services.AddHostedService<MqttBrokerService>();
+builder.Services.AddTransient<IDBContext, DBContext>();
 builder.Services.AddTransient<IMoistureMeterRepository, MoistureMeterRepository>();
 builder.Services.AddTransient<IMoistureMeterService, MoistureMeterService>();
 
