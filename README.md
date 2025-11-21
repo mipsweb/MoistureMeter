@@ -1,3 +1,5 @@
+[![Docker Image CI](https://github.com/mipsweb/MoistureMeter/actions/workflows/docker-image.yml/badge.svg)](https://github.com/mipsweb/MoistureMeter/actions/workflows/docker-image.yml)
+
 # MoistureMeterAPI
 
 MoistureMeterAPI is a small .NET 10 web service that listens for MQTT messages containing moisture sensor readings, persists them to MongoDB, and exposes an ASP.NET Core API surface (OpenAPI/Swagger enabled in development). It includes a background MQTT client, a domain service layer, and a MongoDB repository.
