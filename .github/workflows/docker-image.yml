@@ -32,6 +32,11 @@ jobs:
     - name: Build solution
       run: dotnet build --configuration Release --no-restore
 
+    - name: Install libssl1.1
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libssl1.1
+
     - name: Run unit tests
       run: dotnet test --configuration Release --no-build --verbosity normal
 
