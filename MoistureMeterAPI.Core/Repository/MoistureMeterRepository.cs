@@ -5,12 +5,7 @@ using MongoDB.Driver;
 
 namespace MoistureMeterAPI.Core.Repository
 {
-    /// <summary>
-    /// Provides methods for storing and managing moisture meter readings in a MongoDB database.
-    /// </summary>
-    /// <remarks>This repository encapsulates data access logic for moisture meter readings, allowing for
-    /// insertion and retrieval operations. It is intended to be used as a dependency in services that require
-    /// persistent storage of moisture data. Thread safety and connection management are handled internally.</remarks>
+    /// <inheritdoc/>
     public class MoistureMeterRepository : IMoistureMeterRepository
     {
         ILogger<MoistureMeterRepository> _logger;
@@ -34,6 +29,7 @@ namespace MoistureMeterAPI.Core.Repository
             _moistureMeterCollection.Indexes.CreateOne(new CreateIndexModel<MoistureMeterReading>(Builders<MoistureMeterReading>.IndexKeys.Descending(m => m.Timestamp)));
         }
 
+        /// <inheritdoc/>
         public async Task<PaginationResult<MoistureMeterReading>> GetPaginationResult(int pageSize = 100, MoistureMeterReading? lastRecord = null)
         {
             _logger.LogInformation("GetPaginationResult");
@@ -70,11 +66,7 @@ namespace MoistureMeterAPI.Core.Repository
             }
         }
 
-        /// <summary>
-        /// Asynchronously inserts a new moisture meter reading into the data store.
-        /// </summary>
-        /// <param name="reading">The moisture meter reading to insert. Cannot be null.</param>
-        /// <returns>A task that represents the asynchronous insert operation.</returns>
+        /// <inheritdoc/>
         public async Task<bool> Insert(MoistureMeterReading reading)
         {
             _logger.LogInformation("Inserting new moisture meter reading");
@@ -92,7 +84,5 @@ namespace MoistureMeterAPI.Core.Repository
             }
 
         }
-
-        /**/
     }
 }
