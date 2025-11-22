@@ -13,7 +13,7 @@ namespace MoistureMeterAPI.Core.Repository
         {
             MongoClient _mongoClient = new MongoClient(options.Value.GetConnectionString());
 
-            MongoDatabase = _mongoClient.GetDatabase(options.Value.DatabaseName);
+            MongoDatabase = _mongoClient.GetDatabase(options.Value.DatabaseName);            
         }        
     }
 }
