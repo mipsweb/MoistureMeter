@@ -78,7 +78,7 @@ public class MoistureMeterRepositoryTest
 
         Assert.That(result, Is.Not.Null);
         Assert.That(result.Result, Is.Not.Null);
-        Assert.That(result.Rows, Is.GreaterThan(100));
+        Assert.That(result.Rows, Is.GreaterThan(200));
 
         var lastResult = result.Result.Last();
 
@@ -86,7 +86,7 @@ public class MoistureMeterRepositoryTest
 
         Assert.That(nextResult, Is.Not.Null);
         Assert.That(nextResult.Result, Is.Not.Null);
-        Assert.That(nextResult.Rows, Is.GreaterThan(100));
+        Assert.That(nextResult.Rows, Is.GreaterThan(200));
 
         Assert.That(nextResult.Result.First().Timestamp, Is.LessThan(lastResult.Timestamp));
     }
