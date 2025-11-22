@@ -20,10 +20,54 @@ namespace MoistureMeterAPI.Core.Repository
         {
             _logger = logger;
 
+            var collectionExists = dbContext.MongoDatabase.ListCollectionNames().ToList().Contains("reading");
+            if (!collectionExists)
+            {
+                dbContext.MongoDatabase.CreateCollection("reading");
+            }
+
             _moistureMeterCollection = dbContext.MongoDatabase.GetCollection<MoistureMeterReading>("reading", new MongoCollectionSettings
             {
-                AssignIdOnInsert = true                
+                AssignIdOnInsert = true
             });
+
+            _moistureMeterCollection.Indexes.CreateOne(new CreateIndexModel<MoistureMeterReading>(Builders<MoistureMeterReading>.IndexKeys.Descending(m => m.Timestamp)));
+        }
+
+        public async Task<PaginationResult<MoistureMeterReading>> GetPaginationResult(int pageSize = 100, MoistureMeterReading? lastRecord = null)
+        {
+            _logger.LogInformation("GetPaginationResult");
+
+            try
+            {
+                var compareDateTime = DateTimeOffset.Now;
+                if (lastRecord != null)
+                {
+                    compareDateTime = lastRecord.Timestamp;
+                }
+
+                var filter = Builders<MoistureMeterReading>.Filter.Lt(x => x.Timestamp, compareDateTime);
+
+                var aggregate = _moistureMeterCollection.Aggregate()
+                    .Match(filter)
+                    .SortByDescending(u => u.Timestamp)
+                    .Limit(pageSize);
+
+                var rowsTotal = await _moistureMeterCollection.EstimatedDocumentCountAsync();
+
+                var result = new PaginationResult<MoistureMeterReading>
+                {
+                    Result = aggregate.ToList(),
+                    Rows = rowsTotal
+                };
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "GetPaginationResult failed");
+                throw;
+            }
         }
 
         /// <summary>
@@ -48,5 +92,7 @@ namespace MoistureMeterAPI.Core.Repository
             }
 
         }
+
+        /**/
     }
 }

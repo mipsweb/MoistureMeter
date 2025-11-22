@@ -19,11 +19,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
+    <ProjectReference Include="..\MoistureMeterAPI.Core\MoistureMeterAPI.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MoistureMeterAPI.Core\MoistureMeterAPI.Core.csproj" />
+    <Folder Include="logs\" />
   </ItemGroup>
 
 </Project>
