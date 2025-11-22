@@ -63,6 +63,14 @@ public class MoistureMeterRepositoryTest
         Assert.That(result, Is.True);
     }
 
+    /// <summary>
+    /// Verifies that the moisture meter repository can load a list of moisture meter records with pagination and that
+    /// subsequent pages are correctly retrieved.
+    /// </summary>
+    /// <remarks>This test ensures that the repository returns non-null results with more than 100 rows and
+    /// that pagination yields the expected ordering of records. It validates both initial and subsequent page
+    /// retrievals using the repository's pagination mechanism.</remarks>
+    /// <returns></returns>
     [Test]
     public async Task MoistureMeterRepositoryTest_Verify_MoistureMeter_List_Can_Be_Loaded()
     {
