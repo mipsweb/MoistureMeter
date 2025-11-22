@@ -1,11 +1,11 @@
-﻿using DnsClient.Internal;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using MoistureMeterAPI.Core.Models;
 using MoistureMeterAPI.Core.Repository.Interfaces;
 using MoistureMeterAPI.Core.Services.Interfaces;
 
 namespace MoistureMeterAPI.Core.Services
 {
+    /// <inheritdoc/>
     public class MoistureMeterService : IMoistureMeterService
     {
         ILogger<MoistureMeterService> _logger;
@@ -17,13 +17,30 @@ namespace MoistureMeterAPI.Core.Services
             _moistureMeterRepository = moistureMeterRepository;
         }
 
-        public async Task Insert(MoistureMeterReading reading)
+        /// <inheritdoc/>
+        public async Task<PaginationResult<MoistureMeterReading>> GetPaginationResult(int pageSize = 100, MoistureMeterReading? lastResult = null)
+        {
+            _logger.LogInformation("GetPaginationResult");
+
+            try
+            {
+                return await _moistureMeterRepository.GetPaginationResult(pageSize, lastResult);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "GetPaginationResult failed");
+                throw;
+            }
+        }
+
+        /// <inheritdoc/>
+        public async Task<bool> Insert(MoistureMeterReading reading)
         {
             _logger.LogInformation("Inserting moisture meter reading");
 
             try
             {
-                await _moistureMeterRepository.Insert(reading);
+                return await _moistureMeterRepository.Insert(reading);
             }
             catch (Exception ex)
             {

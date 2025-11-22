@@ -5,6 +5,7 @@ using MongoDB.Driver;
 
 namespace MoistureMeterAPI.Core.Repository
 {
+    /// <inheritdoc/>
     public class DBContext : IDBContext
     {
         public IMongoDatabase MongoDatabase { get; set; }
