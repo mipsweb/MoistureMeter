@@ -90,4 +90,21 @@ public class MoistureMeterRepositoryTest
 
         Assert.That(nextResult.Result.First().Timestamp, Is.LessThan(lastResult.Timestamp));
     }
+
+    [Test]
+    public async Task MoistureMeterRepositoryTest_Verify_MoistureMeter_Can_Be_Loaded_By_Id()
+    {
+        var result = await _repository.GetPaginationResult(100);
+
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result.Result, Is.Not.Null);
+
+        var lastResult = result.Result.Last();
+
+        Assert.That(lastResult, Is.Not.Null);
+
+        var resultLoadById = await _repository.GetById(lastResult.Id);
+
+        Assert.That(resultLoadById, Is.Not.Null);
+    }
 }
