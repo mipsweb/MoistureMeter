@@ -1,4 +1,5 @@
 ﻿using MoistureMeterAPI.Core.Models;
+using MongoDB.Bson;
 
 namespace MoistureMeterAPI.Core.Repository.Interfaces
 {
@@ -27,5 +28,13 @@ namespace MoistureMeterAPI.Core.Repository.Interfaces
         /// <returns>A task that represents the asynchronous operation. The task result contains a <see
         /// cref="PaginationResult{MoistureMeterReading}"/> with the requested page of readings.</returns>
         public Task<PaginationResult<MoistureMeterReading>> GetPaginationResult(int pageSize = 100, MoistureMeterReading? lastRecord = null);
+        
+        /// <summary>
+        /// Retrieves a moisture meter reading by its unique identifier.
+        /// </summary>
+        /// <param name="id">The unique identifier of the moisture meter reading to retrieve.</param>
+        /// <returns>A task that represents the asynchronous operation. The task result contains the moisture meter reading
+        /// associated with the specified identifier, or null if no matching reading is found.</returns>
+        public Task<MoistureMeterReading> GetById(ObjectId id);
     }
 }

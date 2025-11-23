@@ -12,14 +12,14 @@ namespace MoistureMeterAPI.Core.Services.Interfaces
     public interface IMoistureMeterService
     {
         /// <summary>
-        /// Retrieves a paginated list of moisture meter readings, starting after the specified reading.
+        /// Retrieves a paginated list of moisture meter readings, starting after the specified identifier.
         /// </summary>
-        /// <param name="pageSize">The maximum number of readings to include in the result. Must be greater than zero. The default value is
+        /// <param name="pageSize">The maximum number of readings to include in the result. Must be a positive integer. The default value is
         /// 100.</param>
-        /// <param name="lastResult">The last reading from the previous page, or <see langword="null"/> to start from the beginning.</param>
+        /// <param name="lastId">The identifier of the last reading from the previous page. If null, pagination starts from the beginning.</param>
         /// <returns>A task that represents the asynchronous operation. The task result contains a <see
-        /// cref="PaginationResult{MoistureMeterReading}"/> with the requested page of readings.</returns>
-        public Task<PaginationResult<MoistureMeterReading>> GetPaginationResult(int pageSize = 100, MoistureMeterReading? lastResult = null);
+        /// cref="PaginationResult{MoistureMeterReading}"/> with the requested page of readings and pagination metadata.</returns>
+        public Task<PaginationResult<MoistureMeterReading>> GetPaginationResult(int pageSize = 100, string? lastId = null);
         
         /// <summary>
         /// Asynchronously inserts a new moisture meter reading into the data store.

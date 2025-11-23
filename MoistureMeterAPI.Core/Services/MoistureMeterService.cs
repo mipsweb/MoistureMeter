@@ -2,6 +2,8 @@
 using MoistureMeterAPI.Core.Models;
 using MoistureMeterAPI.Core.Repository.Interfaces;
 using MoistureMeterAPI.Core.Services.Interfaces;
+using MongoDB.Bson;
+using MongoDB.Bson.IO;
 
 namespace MoistureMeterAPI.Core.Services
 {
@@ -18,13 +20,20 @@ namespace MoistureMeterAPI.Core.Services
         }
 
         /// <inheritdoc/>
-        public async Task<PaginationResult<MoistureMeterReading>> GetPaginationResult(int pageSize = 100, MoistureMeterReading? lastResult = null)
+        public async Task<PaginationResult<MoistureMeterReading>> GetPaginationResult(int pageSize = 100, string? lastId = null)
         {
             _logger.LogInformation("GetPaginationResult");
 
             try
             {
-                return await _moistureMeterRepository.GetPaginationResult(pageSize, lastResult);
+                MoistureMeterReading? lastRecord = null;
+
+                if (lastId != null) {
+
+                    lastRecord = await _moistureMeterRepository.GetById(new ObjectId(lastId));
+                }                
+
+                return await _moistureMeterRepository.GetPaginationResult(pageSize, lastRecord);
             }
             catch (Exception ex)
             {

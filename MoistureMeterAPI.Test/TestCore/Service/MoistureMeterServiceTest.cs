@@ -3,6 +3,7 @@ using MoistureMeterAPI.Core.Models;
 using MoistureMeterAPI.Core.Repository.Interfaces;
 using MoistureMeterAPI.Core.Services;
 using MoistureMeterAPI.Core.Services.Interfaces;
+using MongoDB.Bson;
 using Moq;
 
 namespace MoistureMeterAPI.Test;
@@ -32,7 +33,8 @@ public class MoistureMeterServiceTest
             seedDataList.Add(new Core.Models.MoistureMeterReading
             {
                 Timestamp = nextDate,
-                Measure = reading
+                Measure = reading,
+                Id = ObjectId.GenerateNewId(),
             });
 
             nextDate = nextDate.AddMinutes(2);
@@ -45,10 +47,15 @@ public class MoistureMeterServiceTest
             .Take(100)
             .ToList(),
             Rows = seedDataList.Count
-        };
+        };        
 
         moistureMeterReposityMock.Setup(c => c.GetPaginationResult(It.IsAny<int>(), It.IsAny<MoistureMeterReading>()))
             .ReturnsAsync(paginateResult);
+
+        var lastRecord = paginateResult.Result.Last();
+
+        moistureMeterReposityMock.Setup(c=>c.GetById(It.IsAny<ObjectId>()))
+            .ReturnsAsync(lastRecord);
 
         moistureMeterService = new MoistureMeterService(moistureMeterServiceLogger, moistureMeterReposityMock.Object);
     }
@@ -70,7 +77,7 @@ public class MoistureMeterServiceTest
     [Test]
     public async Task MoistureMeterServiceTest_Verify_Pagination()
     {
-        MoistureMeterReading? lastResult = null;
+        string? lastResult = null;
         int pageSize = 100;
 
         PaginationResult<MoistureMeterReading> paginationResult = await moistureMeterService.GetPaginationResult(pageSize, lastResult);
@@ -79,5 +86,16 @@ public class MoistureMeterServiceTest
         Assert.That(paginationResult.Result, Is.Not.Null);
         Assert.That(paginationResult.Result.Count, Is.LessThanOrEqualTo(pageSize));
         Assert.That(paginationResult.Rows, Is.GreaterThanOrEqualTo(pageSize));
+
+        var lastRecord = paginationResult.Result.Last();
+
+        Assert.That(lastRecord, Is.Not.Null);
+
+        PaginationResult<MoistureMeterReading> paginationResultNextPage = await moistureMeterService.GetPaginationResult(pageSize, lastRecord.Id.ToString());
+
+        Assert.That(paginationResultNextPage, Is.Not.Null);
+        Assert.That(paginationResultNextPage.Result, Is.Not.Null);
+        Assert.That(paginationResultNextPage.Result.Count, Is.LessThanOrEqualTo(pageSize));
+        Assert.That(paginationResultNextPage.Rows, Is.GreaterThanOrEqualTo(pageSize));
     }
 }

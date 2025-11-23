@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using MoistureMeterAPI.Core.Models;
 using MoistureMeterAPI.Core.Repository.Interfaces;
+using MongoDB.Bson;
 using MongoDB.Driver;
 
 namespace MoistureMeterAPI.Core.Repository
@@ -27,6 +28,24 @@ namespace MoistureMeterAPI.Core.Repository
             });
 
             _moistureMeterCollection.Indexes.CreateOne(new CreateIndexModel<MoistureMeterReading>(Builders<MoistureMeterReading>.IndexKeys.Descending(m => m.Timestamp)));
+        }
+
+        public async Task<MoistureMeterReading> GetById(ObjectId id)
+        {
+            _logger.LogInformation("GetById");
+
+            try
+            {
+                var result = await _moistureMeterCollection.Find(x => x.Id == id)
+                    .FirstOrDefaultAsync();
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "GetById failed");
+                throw;
+            }
         }
 
         /// <inheritdoc/>
